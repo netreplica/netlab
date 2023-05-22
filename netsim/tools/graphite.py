@@ -1,14 +1,14 @@
 # Why use Graphite (https://github.com/netreplica/graphite) only with ContainerLab? :-)
 #
 # With this output module it would be possible to export a topology file to be used within Graphite.
-# 
+#
 # Graphite container can be launched with:
 #
 # docker run -d \
-#  -v "$(pwd)/graphite-default.json":/var/www/localhost/htdocs/default/default.json \
+#  -v "$(pwd)/graphite-default.json":/htdocs/default/default.json \
 #  -p 8080:80 \
 #  --name graphite \
-#  netreplica/graphite:webssh2
+#  netreplica/graphite:latest
 #
 
 import typing
@@ -136,7 +136,14 @@ def links_items(topology: Box) -> list:
 class Graphite(_ToolOutput):
 
   def write(self, topology: Box, fmt: str) -> str:
+    topology_name = ""
+    topology_type = "netlab"
+    if 'name' in topology:
+        topology_name = topology.name
+
     graphite_json = {
+        'name': topology_name,
+        'type': topology_type,
         'nodes': nodes_items(topology),
         'links': links_items(topology),
     }
